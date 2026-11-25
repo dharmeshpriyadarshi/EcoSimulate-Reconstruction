@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Leaf, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
 import { navigation, siteConfig } from '../../config/site'
 
@@ -23,15 +23,13 @@ export default function Header() {
     >
       <div className="container header-inner">
         <Link className="brand" to="/" onClick={closeMenu}>
-          <span className="brand-symbol" aria-hidden="true">
-            <Leaf size={23} strokeWidth={1.8} />
+          <span className="brand-name">
+            {siteConfig.name}
+            <span className="brand-period" aria-hidden="true">.</span>
           </span>
 
-          <span>
-            <span className="brand-name">{siteConfig.name}</span>
-            <span className="brand-subtitle">
-              Environmental Modelling Research
-            </span>
+          <span className="brand-subtitle">
+            Environmental Research / Est. 2025
           </span>
         </Link>
 
@@ -44,7 +42,7 @@ export default function Header() {
           aria-controls="primary-navigation"
           onClick={() => setMenuOpen((previous) => !previous)}
         >
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          {menuOpen ? <X size={21} /> : <Menu size={21} />}
         </button>
 
         <nav
