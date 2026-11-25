@@ -238,3 +238,27 @@ External imagery is documented in the image credits file.
 
 No redistribution of the published IEEE paper is intended
 through this repository.
+
+## License
+
+The independently authored reconstruction code for which
+the copyright holder possesses the necessary licensing
+rights is released under the [MIT License](LICENSE).
+
+The MIT License does not supersede the separate terms
+applicable to third-party materials.
+
+- Third-party software dependencies retain their respective
+  licenses, including the Hippocratic License 2.1 applicable
+  to React Leaflet and its core package.
+- The Delhi smog photograph is licensed under CC BY-SA 4.0.
+- OpenStreetMap data and tiles remain subject to their
+  applicable licensing and usage terms.
+- The original IEEE publication and historical implementation
+  retain their existing ownership and licensing conditions.
+
+### Third-party notices
+
+- [Software license notices](public/THIRD_PARTY_NOTICES.txt)
+- [Image and environmental evidence credits](docs/IMAGE_CREDITS.md)
+- [Hosted third-party notices](https://ecosimulate-reconstruction.vercel.app/THIRD_PARTY_NOTICES.txt)
