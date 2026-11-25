@@ -22,3 +22,27 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Testing and generated reports
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
+
+# Operating system files
+Thumbs.db
+Desktop.ini
+
+# Local experimental exports
+exports/
+ecosimulate-*.csv
+ecosimulate-*.json
