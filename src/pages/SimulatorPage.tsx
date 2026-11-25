@@ -1,3 +1,4 @@
+import ExperimentAnalytics from '../components/analytics/ExperimentAnalytics'
 import {
   applyRegionalScenario,
   resetRegionalScenarios,
@@ -651,7 +652,7 @@ export default function SimulatorPage() {
                   The current geographical resolution
                   is outside the supported range.
                   Adjust the zoom to configure cells
-                  between 10,000 and 100,000 mÃƒâ€šÃ‚Â².
+                  between 10,000 and 100,000 mÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â².
                 </p>
               </section>
             )}
@@ -720,6 +721,15 @@ export default function SimulatorPage() {
           </p>
         )}
       </div>
+
+      <ExperimentAnalytics
+        mode={spatialMode}
+        cells={cells}
+        scenarios={scenarios}
+        selectedScenario={selectedScenario}
+        locationName={location.name}
+        isRegionLocked={isRegionLocked}
+      />
 
       <section className="simulator-context">
         <div>
