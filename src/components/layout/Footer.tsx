@@ -39,6 +39,14 @@ export default function Footer() {
 
           <Link to="/methodology">Methodology and limitations</Link>
           <Link to="/continuity">Research continuity</Link>
+
+          <a
+            href="/THIRD_PARTY_NOTICES.txt"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Third-party licenses <ArrowUpRight size={15} />
+          </a>
         </nav>
       </div>
 
