@@ -1,3 +1,19 @@
+import RegionalInterventionControls from './RegionalInterventionControls'
+
+import {
+  getTargetCells,
+  getEligibleCells,
+} from '../../features/spatial/regionalScenarios'
+
+import type {
+  InterventionScope,
+  OverwritePolicy,
+} from '../../features/spatial/regionalScenarios'
+
+import type {
+  ScenarioStore,
+} from '../../features/spatial/scenarioTypes'
+
 import { useState } from 'react'
 
 import {
@@ -36,8 +52,12 @@ interface CellScenarioEditorProps {
   mode: SpatialMode
   cell: SpatialGridCell
   scenario?: CellScenario
+  cells: readonly SpatialGridCell[]
+  scenarios: ScenarioStore
   onApply: (
     parameters: CellScenarioParameters,
+    scope: InterventionScope,
+    policy: OverwritePolicy,
   ) => void
   onReset: () => void
 }
@@ -76,6 +96,8 @@ export default function CellScenarioEditor({
   mode,
   cell,
   scenario,
+  cells,
+  scenarios,
   onApply,
   onReset,
 }: CellScenarioEditorProps) {
@@ -88,6 +110,35 @@ export default function CellScenarioEditor({
 
   const [error, setError] = useState('')
 
+  const [scope, setScope] =
+    useState<InterventionScope>('selected')
+
+  const [policy, setPolicy] =
+    useState<OverwritePolicy>('preserve')
+
+  // Single-cell editing must remain available
+  // even when that cell already has a scenario.
+
+  const effectivePolicy: OverwritePolicy =
+    scope === 'selected' ? 'replace' : policy
+
+  const targets = getTargetCells(
+    cells,
+    cell.id,
+    scope,
+  )
+
+  const eligible = getEligibleCells(
+    scenarios,
+    targets,
+    effectivePolicy,
+  )
+
+  const deploymentCount =
+    parameters.mode === 'research'
+      ? parameters.inputs.artificialTrees
+      : parameters.inputs.filtrationUnits
+
   function updateParameters(
     next: CellScenarioParameters,
   ) {
@@ -98,7 +149,15 @@ export default function CellScenarioEditor({
 
   function applyScenario() {
     try {
-      onApply(parameters)
+      if (eligible.length === 0) {
+        return
+      }
+
+      onApply(
+        parameters,
+        scope,
+        effectivePolicy,
+      )
       setHasChanges(false)
       setError('')
     } catch (cause) {
@@ -142,7 +201,7 @@ export default function CellScenarioEditor({
         <>
           <ParameterControl
             label="Temperature"
-            unit="°C"
+            unit="Â°C"
             value={parameters.inputs.temperature}
             {...PUBLISHED_PARAMETER_BOUNDS.temperature}
             onChange={(temperature) =>
@@ -158,7 +217,7 @@ export default function CellScenarioEditor({
 
           <ParameterControl
             label="Baseline PM2.5"
-            unit="µg/m³"
+            unit="Âµg/mÂ³"
             value={parameters.inputs.pm25}
             {...PUBLISHED_PARAMETER_BOUNDS.pm25}
             onChange={(pm25) =>
@@ -208,7 +267,7 @@ export default function CellScenarioEditor({
         <>
           <ParameterControl
             label="Baseline PM2.5"
-            unit="µg/m³"
+            unit="Âµg/mÂ³"
             value={parameters.inputs.baselinePm25}
             {...PARAMETER_BOUNDS.baselinePm25}
             onChange={(baselinePm25) =>
@@ -258,11 +317,22 @@ export default function CellScenarioEditor({
         </>
       )}
 
+      <RegionalInterventionControls
+        cells={cells}
+        selectedCellId={cell.id}
+        scenarios={scenarios}
+        scope={scope}
+        policy={effectivePolicy}
+        deploymentCount={deploymentCount}
+        onScopeChange={setScope}
+        onPolicyChange={setPolicy}
+      />
+
       <div className="scenario-area-reference">
         <span>Fixed experimental area</span>
 
         <strong>
-          {Math.round(cell.area).toLocaleString()} m²
+          {Math.round(cell.area).toLocaleString()} mÂ²
         </strong>
       </div>
 
@@ -270,9 +340,10 @@ export default function CellScenarioEditor({
         type="button"
         className="workspace-button workspace-button-primary scenario-apply"
         onClick={applyScenario}
+        disabled={eligible.length === 0}
       >
         <Check size={16} />
-        Apply intervention
+        Apply to {eligible.length} cell(s)
       </button>
 
       <button

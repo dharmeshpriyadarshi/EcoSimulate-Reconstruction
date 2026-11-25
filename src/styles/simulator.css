@@ -1015,3 +1015,66 @@
     flex-basis: 100%;
   }
 }
+
+/* Regional intervention configuration */
+
+.regional-controls {
+  padding-block: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.regional-controls > .eyebrow {
+  margin-bottom: 16px;
+}
+
+.regional-controls > label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+}
+
+.regional-controls > select {
+  width: 100%;
+  min-height: 38px;
+  margin-bottom: 16px;
+  padding: 8px;
+  background: var(--color-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  font-size: 0.77rem;
+}
+
+.regional-controls > select:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.regional-preview {
+  margin-block: 4px 0;
+  padding: 12px;
+  background: #e9ebe1;
+  border: 1px solid #d0d4c5;
+}
+
+.regional-preview > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding-block: 6px;
+}
+
+.regional-preview dt {
+  color: #55594e;
+  font-size: 0.68rem;
+}
+
+.regional-preview dd {
+  margin: 0;
+  color: #35472c;
+  font-family: var(--font-mono);
+  font-size: 0.77rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}

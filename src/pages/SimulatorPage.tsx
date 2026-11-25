@@ -1,3 +1,13 @@
+import {
+  applyRegionalScenario,
+  resetRegionalScenarios,
+} from '../features/spatial/regionalScenarios'
+
+import type {
+  InterventionScope,
+  OverwritePolicy,
+} from '../features/spatial/regionalScenarios'
+
 import AnalysisControls from '../components/map/AnalysisControls'
 
 import {
@@ -12,8 +22,6 @@ import CellScenarioEditor from '../components/simulator/CellScenarioEditor'
 import CellScenarioResults from '../components/simulator/CellScenarioResults'
 
 import {
-  calculateCellScenario,
-  saveCellScenario,
   removeCellScenario,
   countConfiguredCells,
 } from '../features/spatial/scenarios'
@@ -101,6 +109,9 @@ export default function SimulatorPage() {
     useState(DEFAULT_GRID_INDEX)
 
   const [showGrid, setShowGrid] = useState(true)
+
+  const [editorVersion, setEditorVersion] =
+    useState(0)
 
   const [layerId, setLayerId] =
     useState<AnalysisLayer>('intervention')
@@ -226,6 +237,8 @@ export default function SimulatorPage() {
 
   function handleApplyScenario(
     parameters: CellScenarioParameters,
+    scope: InterventionScope,
+    policy: OverwritePolicy,
   ) {
     if (!selectedCell || !isRegionLocked) {
       throw new Error(
@@ -237,16 +250,36 @@ export default function SimulatorPage() {
       throw new Error('Scenario mode mismatch.')
     }
 
-    // Validate synchronously before scheduling the state update.
-    calculateCellScenario(selectedCell, parameters)
+    const updated = applyRegionalScenario(
+      scenarios,
+      cells,
+      selectedCell.id,
+      scope,
+      policy,
+      parameters,
+    )
+
+    setScenarios(updated)
+  }
+
+  function handleResetRegion() {
+    if (!isRegionLocked || configuredCellCount === 0) {
+      return
+    }
+
+    const confirmed = window.confirm(
+      `Reset all ${configuredCellCount} configured cells in this study region?`,
+    )
+
+    if (!confirmed) {
+      return
+    }
 
     setScenarios((previous) =>
-      saveCellScenario(
-        previous,
-        selectedCell,
-        parameters,
-      ),
+      resetRegionalScenarios(previous, cells),
     )
+
+    setEditorVersion((previous) => previous + 1)
   }
 
   function handleResetScenario() {
@@ -465,6 +498,17 @@ export default function SimulatorPage() {
             <button
               type="button"
               className="workspace-button"
+              disabled={
+                !isRegionLocked ||
+                configuredCellCount === 0
+              }
+              onClick={handleResetRegion}
+            >
+              Reset region
+            </button>
+            <button
+              type="button"
+              className="workspace-button"
               onClick={() => {
                 setResetVersion(
                   (previous) => previous + 1,
@@ -567,7 +611,9 @@ export default function SimulatorPage() {
             {selectedCell && isRegionLocked && (
               <>
                 <CellScenarioEditor
-                  key={`${spatialMode}-${selectedCell.id}`}
+                  key={`${spatialMode}-${selectedCell.id}-${editorVersion}`}
+                  cells={cells}
+                  scenarios={scenarios}
                   mode={spatialMode}
                   cell={selectedCell}
                   scenario={selectedScenario}
@@ -605,7 +651,7 @@ export default function SimulatorPage() {
                   The current geographical resolution
                   is outside the supported range.
                   Adjust the zoom to configure cells
-                  between 10,000 and 100,000 mÃ‚Â².
+                  between 10,000 and 100,000 mÃƒâ€šÃ‚Â².
                 </p>
               </section>
             )}
