@@ -1,3 +1,4 @@
+import ExperimentExportPanel from './ExperimentExportPanel'
 import RegionalStatisticsPanel from './RegionalStatisticsPanel'
 import SpatialCoveragePanel from './SpatialCoveragePanel'
 import EquationBreakdown from './EquationBreakdown'
@@ -171,6 +172,15 @@ export default function ExperimentAnalytics({
 
           <CellAnalysisTable
             statistics={statistics}
+          />
+
+          <ExperimentExportPanel
+            key={`${mode}-${locationName}-${cells[0]?.id}`}
+            locationName={locationName}
+            mode={mode}
+            cells={cells}
+            scenarios={scenarios}
+            configuredCells={statistics.configuredCells}
           />
 
           <div className="analytics-interpretation">
