@@ -1,4 +1,4 @@
-import ExperimentAnalytics from '../components/analytics/ExperimentAnalytics'
+
 import {
   applyRegionalScenario,
   resetRegionalScenarios,
@@ -33,6 +33,8 @@ import type {
 } from '../features/spatial/scenarioTypes'
 
 import {
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -91,6 +93,31 @@ import type {
 } from '../features/spatial/adaptiveTypes'
 
 import '../styles/simulator.css'
+
+const ExperimentAnalytics = lazy(
+  () => import('../components/analytics/ExperimentAnalytics'),
+)
+
+function AnalyticsLoading() {
+  return (
+    <section
+      className="experiment-analytics"
+      role="status"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <p className="eyebrow">
+        Experimental analysis / ECOSIMULATE
+      </p>
+
+      <h2>Preparing experimental analysis.</h2>
+
+      <div className="analytics-empty">
+        Loading scientific visualization components.
+      </div>
+    </section>
+  )
+}
 
 export default function SimulatorPage() {
   const [locationId, setLocationId] = useState(
@@ -652,7 +679,7 @@ export default function SimulatorPage() {
                   The current geographical resolution
                   is outside the supported range.
                   Adjust the zoom to configure cells
-                  between 10,000 and 100,000 mÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â².
+                  between 10,000 and 100,000 mÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â².
                 </p>
               </section>
             )}
@@ -722,14 +749,44 @@ export default function SimulatorPage() {
         )}
       </div>
 
-      <ExperimentAnalytics
-        mode={spatialMode}
-        cells={cells}
-        scenarios={scenarios}
-        selectedScenario={selectedScenario}
-        locationName={location.name}
-        isRegionLocked={isRegionLocked}
-      />
+      {isRegionLocked && configuredCellCount > 0 ? (
+        <Suspense fallback={<AnalyticsLoading />}>
+          <ExperimentAnalytics
+            mode={spatialMode}
+            cells={cells}
+            scenarios={scenarios}
+            selectedScenario={selectedScenario}
+            locationName={location.name}
+            isRegionLocked={isRegionLocked}
+          />
+        </Suspense>
+      ) : (
+        <section className="experiment-analytics">
+          <header className="analytics-heading">
+            <div>
+              <p className="eyebrow">
+                Experimental analysis / ECOSIMULATE
+              </p>
+
+              <h2>Understanding the intervention.</h2>
+            </div>
+
+            <p className="analytics-description">
+              {location.name}
+              {' / '}
+              {spatialMode === 'research'
+                ? 'Published Pollution Index'
+                : 'Illustrative PM2.5 model'}
+            </p>
+          </header>
+
+          <div className="analytics-empty">
+            {!isRegionLocked
+              ? 'Lock an adaptive study region before configuring and analysing environmental scenarios.'
+              : 'Apply an intervention to at least one geographical cell to begin experimental analysis.'}
+          </div>
+        </section>
+      )}
 
       <section className="simulator-context">
         <div>
